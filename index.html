@@ -1,0 +1,799 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Барыга</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #f2f5f9; --card: #ffffff; --text: #0f172a; --text-sec: #64748b; --primary: #2563eb;
+    --primary-light: #eff6ff; --success: #059669; --success-light: #ecfdf5; --danger: #dc2626;
+    --border: #e2e8f0; --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+}
+body.theme-dubai { --bg: #fdfbf7; --card: #ffffff; --text: #422006; --text-sec: #854d0e; --primary: #d97706; --primary-light: #fef3c7; --success: #16a34a; --success-light: #dcfce7; --border: #fde68a; }
+body.theme-london { --bg: #f1f5f9; --card: #ffffff; --text: #0f172a; --text-sec: #64748b; --primary: #1d4ed8; --primary-light: #dbeafe; --success: #dc2626; --success-light: #fee2e2; --border: #cbd5e1; }
+body.theme-germany { --bg: #121212; --card: #1e1e1e; --text: #f8f9fa; --text-sec: #a0aab5; --primary: #d4af37; --primary-light: #332b1a; --success: #d4af37; --success-light: #332b1a; --danger: #e63946; --border: #333333; }
+
+/* СБРОС ВСЕХ ЭФФЕКТОВ НАЖАТИЯ */
+* { -webkit-tap-highlight-color: transparent !important; -webkit-focus-ring-color: transparent !important; outline: none !important; }
+button, .act-btn, .modal-btn, .bank-btn, .biz-btn, .tab {
+    outline: none !important; outline-width: 0 !important; box-shadow: none !important;
+    -webkit-appearance: none !important; appearance: none !important; border: none;
+    transition: opacity 0.1s;
+}
+button:focus, button:active, .act-btn:focus, .act-btn:active, .modal-btn:focus, .modal-btn:active,
+.bank-btn:focus, .bank-btn:active, .biz-btn:focus, .biz-btn:active, .tab:focus, .tab:active {
+    outline: none !important; border: none !important; box-shadow: none !important;
+    -webkit-box-shadow: none !important; -moz-box-shadow: none !important; transform: none !important;
+}
+button:active, .act-btn:active, .modal-btn:active, .bank-btn:active, .biz-btn:active { opacity: 0.7; }
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Manrope',-apple-system,sans-serif;user-select:none;}
+body{background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;transition: background 0.3s;}
+
+.header{background:var(--card);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);z-index:10;}
+.logo{font-size:18px;font-weight:800;color:var(--text);letter-spacing:-0.5px}
+.header-right{display:flex;gap:8px;align-items:center;}
+.location-badge{font-size:12px;font-weight:800;color:var(--primary);background:var(--primary-light);padding:6px 10px;border-radius:10px;border:1px solid var(--primary-light); cursor:pointer;}
+.level-badge{font-size:12px;font-weight:800;color:var(--primary);background:var(--primary-light);padding:6px 10px;border-radius:10px;border:1px solid var(--primary-light)}
+.wallet{font-size:16px;font-weight:800;color:var(--success);background:var(--success-light);padding:6px 12px;border-radius:10px;}
+.bonus-btn{background:#fffbeb;padding:6px 12px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;color:#d97706;border:1px solid #fef3c7}
+.prof{background:var(--bg);padding:6px 12px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;color:var(--text);border:1px solid var(--border)}
+
+.tabs{display:flex;background:var(--card);padding:8px 16px;border-bottom:1px solid var(--border);gap:8px;z-index:9;overflow-x:auto;white-space:nowrap;}
+.tab{flex:1;text-align:center;padding:10px 0;font-weight:700;color:var(--text-sec);cursor:pointer;border-radius:10px;font-size:13px;}
+.tab.active{background:var(--primary);color:#fff;}
+
+.content{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;padding-bottom:30px}
+
+.ad-card{background:var(--card);border-radius:16px;padding:16px;display:flex;gap:16px;box-shadow:var(--shadow);border:1px solid var(--border);}
+.ad-img{width:70px;height:70px;background:var(--bg);border-radius:12px;display:flex;justify-content:center;align-items:center;flex-shrink:0;overflow:hidden}
+.ad-img img{width:100%;height:100%;object-fit:cover;}
+.ad-info{flex:1;display:flex;flex-direction:column}
+.ad-title{font-size:15px;font-weight:800;margin-bottom:2px}
+.ad-price{font-size:17px;font-weight:800;color:var(--primary);margin-bottom:4px}
+.ad-desc{font-size:12px;color:var(--text-sec);margin-bottom:12px;font-weight:500}
+.ad-actions{display:flex;gap:8px;margin-top:auto}
+.act-btn{flex:1;padding:12px;border-radius:12px;border:none;font-weight:700;font-size:13px;cursor:pointer;display:flex;justify-content:center;align-items:center;}
+.btn-buy{background:var(--primary);color:#fff}
+.btn-chat{background:var(--bg);color:var(--text);border:1px solid var(--border)}
+.btn-sell{background:var(--success);color:#fff}
+.btn-black{background:#1e293b;color:#fff}
+
+.chat-box{display:flex;flex-direction:column;height:100%;background:var(--card);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--border)}
+.chat-head{padding:16px;background:var(--card);border-bottom:1px solid var(--border);font-weight:800;display:flex;align-items:center;gap:10px;font-size:15px}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+.msg{max-width:85%;padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.4;font-weight:500;}
+.msg.seller{align-self:flex-start;background:var(--card);border-bottom-left-radius:4px;}
+.msg.me{align-self:flex-end;background:var(--primary);color:#fff;border-bottom-right-radius:4px}
+.msg-time{font-size:10px;opacity:.7;margin-top:4px;display:block;text-align:right}
+.chat-input{display:flex;padding:12px;background:var(--card);border-top:1px solid var(--border);gap:8px}
+.chat-input input{flex:1;padding:12px 16px;border:1px solid var(--border);border-radius:24px;font-size:14px;outline:none;background:var(--bg);font-weight:500}
+.chat-input button{background:var(--primary);color:#fff;border:none;width:44px;height:44px;border-radius:50%;font-size:16px;cursor:pointer;}
+
+.chat-list{display:flex;flex-direction:column;gap:8px}
+.chat-item{background:var(--card);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:var(--shadow);border:1px solid var(--border)}
+.chat-ava{width:44px;height:44px;background:var(--bg);border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:20px}
+.chat-name{font-weight:800;font-size:14px;margin-bottom:2px}
+.chat-last{font-size:12px;color:var(--text-sec);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;font-weight:500}
+
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,.5);backdrop-filter:blur(4px);z-index:100;display:flex;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:.3s;padding:20px}
+.modal.active{opacity:1;pointer-events:all}
+.modal-box{background:var(--card);width:100%;max-width:340px;border-radius:24px;padding:24px;text-align:center;max-height:85vh;overflow-y:auto;transform:translateY(20px);transition:.3s;}
+.modal.active .modal-box{transform:translateY(0)}
+.modal-icon{font-size:48px;margin-bottom:12px}
+.modal-title{font-size:20px;font-weight:800;margin-bottom:8px;}
+.modal-text{font-size:14px;color:var(--text-sec);margin-bottom:20px;line-height:1.5;font-weight:500}
+.modal-input{width:100%;padding:12px;margin-bottom:12px;border:1px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--bg);}
+.modal-btn{background:var(--primary);color:#fff;border:none;padding:14px;border-radius:12px;font-weight:700;font-size:15px;width:100%;cursor:pointer;margin-bottom:8px;}
+
+.p-stats{display:flex;flex-direction:column;gap:8px;text-align:left;margin-bottom:16px}
+.p-row{display:flex;justify-content:space-between;padding:12px 16px;background:var(--bg);border-radius:12px;font-size:13px;font-weight:600;color:var(--text-sec)}
+.p-row span:last-child{font-weight:800;color:var(--text)}
+.xp-bar-container{background:var(--bg);border-radius:10px;height:12px;width:100%;margin-bottom:16px;overflow:hidden;}
+.xp-bar-fill{background:var(--primary);height:100%;width:0%;border-radius:10px;}
+
+.biz-card{background:var(--card);border-radius:16px;padding:16px;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.biz-info{display:flex;flex-direction:column;gap:4px;}
+.biz-title{font-weight:800;font-size:16px;}
+.biz-desc{font-size:12px;color:var(--text-sec);font-weight:500;}
+.biz-income{font-size:13px;color:var(--success);font-weight:800;margin-top:4px;}
+.biz-btn{background:var(--primary);color:#fff;border:none;padding:10px 16px;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--success);color:#fff;padding:12px 24px;border-radius:30px;font-weight:800;font-size:14px;box-shadow:0 10px 20px rgba(0,0,0,0.2);opacity:0;transition:all 0.3s;z-index:1000;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+.bank-card{background:var(--card);border-radius:16px;padding:16px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:12px;}
+.bank-card h3{font-size:16px;margin-bottom:8px;}
+.bank-input{width:100%;padding:10px;margin:8px 0;border:1px solid var(--border);border-radius:8px;font-size:14px;background:var(--bg);color:var(--text);}
+.bank-btn{background:var(--primary);color:#fff;border:none;padding:10px;border-radius:10px;font-weight:800;width:100%;margin-top:8px;cursor:pointer;}
+
+.empty{text-align:center;color:var(--text-sec);margin-top:40px;font-weight:600;font-size:14px}
+
+.news-card{background:var(--card);border-radius:16px;padding:16px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:12px;}
+.news-title{font-size:16px;font-weight:800;color:var(--primary);margin-bottom:8px;}
+.news-item{font-size:14px;color:var(--text-sec);margin-bottom:8px;padding-left:15px;position:relative;line-height:1.4;}
+.news-item::before{content:'•';position:absolute;left:0;color:var(--primary);font-weight:900;}
+
+.crypto-graph { width: 100%; height: 100px; background: var(--bg); border-radius: 12px; margin-bottom: 15px; position: relative; overflow: hidden; border: 1px solid var(--border); }
+.crypto-line { position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--primary); transition: all 1s linear; }
+</style>
+</head>
+<body>
+
+<div id="loader" style="position:fixed;top:0;left:0;width:100%;height:100%;background:var(--card);z-index:9999;display:flex;flex-direction:column;justify-content:center;align-items:center;transition:opacity 0.5s;">
+    <div style="font-size:30px;font-weight:800;color:var(--primary);margin-bottom:20px;">Барыга</div>
+    <div style="width:50px;height:50px;border:4px solid var(--bg);border-top:4px solid var(--primary);border-radius:50%;animation:spin 1s linear infinite;"></div>
+</div>
+<style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+
+<div class="toast" id="toast">+500 ₽</div>
+
+<div class="header">
+<div class="logo">Барыга</div>
+<div class="header-right">
+    <div class="location-badge" id="locationBadge" onclick="openLocations()">🌍 Москва</div>
+    <div class="level-badge" id="levelBadge">Lv. 1</div>
+    <div class="wallet" id="wallet">10 000 ₽</div>
+    <div class="prof" onclick="openProfile()">👤</div>
+</div>
+</div>
+<div class="tabs">
+<div class="tab active" onclick="switchTab('buy')">Купить</div>
+<div class="tab" onclick="switchTab('sell')">Продать</div>
+<div class="tab" onclick="switchTab('chat')">Чаты</div>
+<div class="tab" onclick="switchTab('biz')">Бизнес</div>
+<div class="tab" onclick="switchTab('black')">🌑</div>
+<div class="tab" onclick="switchTab('news')">📰</div>
+</div>
+<div class="content" id="mainContent"></div>
+<div class="modal" id="modal">
+<div class="modal-box" id="modalBox">
+<div class="modal-icon" id="modalIcon">💬</div>
+<div class="modal-title" id="modalTitle">Успех</div>
+<div class="modal-text" id="modalText">Текст</div>
+<div id="modalExtra"></div>
+<button class="modal-btn" onclick="closeModal()" id="modalCloseBtn">ОК</button>
+</div>
+</div>
+
+<script>
+let money = 10000, currentTab = 'buy', inventory = [], chats = [], stats = {bought:0, sold:0, profit:0, deals:0};
+let level = 1, xp = 0, xpNeeded = 100, debt = 0, deposit = 0;
+let cryptoPrice = 100, cryptoCoins = 0;
+let properties = [];
+let currentLocation = 'Москва';
+let partners = [
+    { id: 1, name: 'Курьер', desc: 'Ищет клиентов', baseCost: 15000, income: 500, level: 0 },
+    { id: 2, name: 'Менеджер', desc: 'Скупает мелочь', baseCost: 50000, income: 2000, level: 0 },
+    { id: 3, name: 'Автосалон', desc: 'Продает машины', baseCost: 200000, income: 10000, level: 0 }
+];
+
+const propertyMarket = {
+    'Москва': { name: 'Квартира в Москве', price: 300000, income: 5000, img: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=200' },
+    'Лондон': { name: 'Апартаменты в Лондоне', price: 700000, income: 12000, img: 'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=200' },
+    'Дубай': { name: 'Пентхаус в Дубае', price: 1500000, income: 30000, img: 'https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=200' },
+    'Германия': { name: 'Старинный замок', price: 5000000, income: 100000, img: 'https://images.pexels.com/photos/209251/pexels-photo-209251.jpeg?auto=compress&cs=tinysrgb&w=200' }
+};
+
+const locations = {
+    'Москва': { multiplier: 1.0, cost: 0 },
+    'Дубай': { multiplier: 2.0, cost: 50000 },
+    'Лондон': { multiplier: 1.5, cost: 25000 },
+    'Германия': { multiplier: 2.5, cost: 150000 }
+};
+
+const marketItems=[
+{id:1,name:'iPhone 11',img:'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:15000,askPrice:12000,desc:'Битая камера'},
+{id:2,name:'iPhone 14 Pro',img:'https://images.pexels.com/photos/1294886/pexels-photo-1294886.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:70000,askPrice:60000,desc:'Без коробки'},
+{id:3,name:'Samsung S23',img:'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:50000,askPrice:42000,desc:'Царапина'},
+{id:4,name:'MacBook Air M1',img:'https://images.pexels.com/photos/18105/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=200',truePrice:65000,askPrice:55000,desc:'АКБ держит'},
+{id:5,name:'Ноутбук ASUS',img:'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:25000,askPrice:20000,desc:'Греется'},
+{id:6,name:'PlayStation 5',img:'https://images.pexels.com/photos/12719145/pexels-photo-12719145.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:40000,askPrice:35000,desc:'1 геймпад'},
+{id:7,name:'Xbox Series X',img:'https://images.pexels.com/photos/12719145/pexels-photo-12719145.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:42000,askPrice:38000,desc:'С джойстиком'},
+{id:8,name:'Nintendo Switch',img:'https://images.pexels.com/photos/12719145/pexels-photo-12719145.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:20000,askPrice:16000,desc:'С играми'},
+{id:9,name:'Монитор 27"',img:'https://images.pexels.com/photos/1029757/pexels-photo-1029757.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:15000,askPrice:11000,desc:'Битый пиксель'},
+{id:10,name:'Apple Watch',img:'https://images.pexels.com/photos/267394/pexels-photo-267394.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:12000,askPrice:10000,desc:'SE'},
+{id:11,name:'AirPods Pro',img:'https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:8000,askPrice:6000,desc:'Потерян кейс'},
+{id:12,name:'Пылесос Dyson',img:'https://images.pexels.com/photos/4108715/pexels-photo-4108715.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:25000,askPrice:20000,desc:'Шумит'},
+{id:13,name:'Nike Air',img:'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:8000,askPrice:5000,desc:'Оригинал'},
+{id:14,name:'Велосипед',img:'https://images.pexels.com/photos/100582/pexels-photo-100582.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:12000,askPrice:9000,desc:'Скрипит'},
+{id:15,name:'Фотоаппарат',img:'https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:18000,askPrice:14000,desc:'Canon'},
+{id:16,name:'Гитара',img:'https://images.pexels.com/photos/3428498/pexels-photo-3428498.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:6000,askPrice:4500,desc:'Акустика'},
+{id:17,name:'Квадрокоптер',img:'https://images.pexels.com/photos/1087180/pexels-photo-1087180.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:22000,askPrice:18000,desc:'DJI Mini'},
+{id:18,name:'Колонка JBL',img:'https://images.pexels.com/photos/1279107/pexels-photo-1279107.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:4000,askPrice:3000,desc:'Хрипит'},
+{id:19,name:'Телевизор',img:'https://images.pexels.com/photos/6976094/pexels-photo-6976094.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:30000,askPrice:25000,desc:'55 дюймов'},
+{id:20,name:'Клавиатура',img:'https://images.pexels.com/photos/2115256/pexels-photo-2115256.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:5000,askPrice:3500,desc:'Механика'},
+{id:21,name:'BMW E34',img:'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:80000,askPrice:60000,desc:'Не на ходу'},
+{id:22,name:'Audi A6',img:'https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:85000,askPrice:70000,desc:'2008 г.'},
+{id:23,name:'Mercedes W211',img:'https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:90000,askPrice:75000,desc:'Ржавчина'},
+{id:24,name:'Volkswagen Golf',img:'https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:35000,askPrice:28000,desc:'Надежный'},
+{id:25,name:'Lada Priora',img:'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:15000,askPrice:12000,desc:'2012 г.'},
+{id:26,name:'УАЗ Патриот',img:'https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:30000,askPrice:25000,desc:'Без доков'},
+{id:27,name:'Toyota Camry',img:'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:60000,askPrice:50000,desc:'Такси'},
+{id:28,name:'Honda Civic',img:'https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:45000,askPrice:38000,desc:'Тюнинг'},
+{id:29,name:'Nissan Skyline',img:'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:110000,askPrice:90000,desc:'Легенда'},
+{id:30,name:'Porsche Cayenne',img:'https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:120000,askPrice:100000,desc:'Коробка'},
+{id:31,name:'Audi RS6',img:'https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:150000,askPrice:130000,desc:'Мощь'},
+{id:32,name:'BMW M5',img:'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:180000,askPrice:150000,desc:'Битая'},
+{id:33,name:'Mercedes G-Class',img:'https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:250000,askPrice:200000,desc:'Гелендваген'},
+{id:34,name:'Nissan GTR',img:'https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:200000,askPrice:170000,desc:'Тюнинг'},
+{id:35,name:'Lamborghini',img:'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=200',truePrice:300000,askPrice:250000,desc:'Мечта'}
+];
+
+const names=['Алексей','Мария','Дмитрий','Сергей','Ольга','Иван','Екатерина','Максим','Анна','Павел'];
+
+// --- БЕЗОПАСНОЕ СОХРАНЕНИЕ ---
+function saveGame() {
+    try {
+        const data = { money, inventory, chats, stats, level, xp, xpNeeded, debt, deposit, cryptoPrice, cryptoCoins, properties, currentLocation, partners };
+        localStorage.setItem('baryga_save', JSON.stringify(data));
+    } catch(e) { console.log('Сохранение недоступно'); }
+}
+
+function loadGame() {
+    try {
+        const saved = localStorage.getItem('baryga_save');
+        if (saved) {
+            const data = JSON.parse(saved);
+            money = data.money ?? 10000;
+            inventory = data.inventory ?? [];
+            chats = data.chats ?? [];
+            stats = data.stats ?? {bought:0, sold:0, profit:0, deals:0};
+            level = data.level ?? 1;
+            xp = data.xp ?? 0;
+            xpNeeded = data.xpNeeded ?? 100;
+            debt = data.debt ?? 0;
+            deposit = data.deposit ?? 0;
+            cryptoPrice = data.cryptoPrice ?? 100;
+            cryptoCoins = data.cryptoCoins ?? 0;
+            properties = data.properties ?? [];
+            currentLocation = data.currentLocation ?? 'Москва';
+            if (data.partners) partners = data.partners;
+        }
+    } catch(e) { console.log('Загрузка недоступна'); }
+    updateWallet(); updateLevelUI(); updateLocationUI();
+}
+
+// --- ЗВУКИ ---
+let audioCtx = null;
+function playSound(type) {
+    try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+        if (type === 'click') { osc.type = 'sine'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.05); gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05); osc.start(now); osc.stop(now + 0.05); }
+        else if (type === 'success') { osc.type = 'triangle'; osc.frequency.setValueAtTime(400, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.1); gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2); osc.start(now); osc.stop(now + 0.2); }
+        else if (type === 'error') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(300, now); osc.frequency.exponentialRampToValueAtTime(150, now + 0.15); gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15); osc.start(now); osc.stop(now + 0.15); }
+    } catch(e) { console.log('Звук недоступен'); }
+}
+
+document.addEventListener('click', function(e) {
+    if (e.target.closest('button') || e.target.closest('.act-btn') || e.target.closest('.tab') || e.target.closest('.chat-item') || e.target.closest('.biz-card')) playSound('click');
+});
+
+function getTime(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+function format(n){return Math.floor(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")}
+
+function updateWallet(){
+    const w = document.getElementById('wallet');
+    w.innerText = format(money) + ' ₽';
+    w.classList.add('bump'); setTimeout(() => w.classList.remove('bump'), 200);
+}
+
+function updateLocationUI() {
+    document.getElementById('locationBadge').innerText = '🌍 ' + currentLocation;
+    document.body.className = '';
+    if (currentLocation === 'Дубай') document.body.classList.add('theme-dubai');
+    else if (currentLocation === 'Лондон') document.body.classList.add('theme-london');
+    else if (currentLocation === 'Германия') document.body.classList.add('theme-germany');
+}
+
+function openCrypto() {
+    document.getElementById('modalIcon').innerText = '📈';
+    document.getElementById('modalTitle').innerText = 'Крипто-биржа';
+    let html = `
+    <div class="bank-card" style="text-align:left;">
+        <h3>Барыга-Коин (BARY)</h3>
+        <p style="font-size:12px;">Курс: <b id="cryptoPriceDisplay">${format(cryptoPrice)} ₽</b></p>
+        <p style="font-size:12px;">Монет: <b>${cryptoCoins}</b></p>
+        <p style="font-size:12px;">Ваши монеты: <b style="color:var(--success);">${format(cryptoCoins * cryptoPrice)} ₽</b></p>
+        <div class="crypto-graph"><div class="crypto-line" id="cryptoLine" style="height: ${Math.min(cryptoPrice, 100)}%;"></div></div>
+        <input type="number" id="cryptoSum" class="bank-input" placeholder="Сумма в ₽">
+        <button class="bank-btn" style="background:var(--success);" onclick="buyCrypto()">Купить монеты</button>
+        <button class="bank-btn" style="background:var(--danger); margin-top:8px;" onclick="sellCrypto()">Продать всё</button>
+    </div>`;
+    document.getElementById('modalText').innerHTML = html;
+    document.getElementById('modalExtra').innerHTML = '';
+    document.getElementById('modalCloseBtn').style.display = 'none';
+    document.getElementById('modal').classList.add('active');
+}
+
+function buyCrypto() {
+    const sum = parseInt(document.getElementById('cryptoSum').value);
+    if (!sum || sum <= 0) { showToast('Введите сумму'); playSound('error'); return; }
+    if (sum > money) { showToast('Недостаточно средств'); playSound('error'); return; }
+    money -= sum; cryptoCoins += sum / cryptoPrice;
+    updateWallet(); closeModal(); playSound('success'); saveGame();
+    showToast('Вы купили ' + (sum / cryptoPrice).toFixed(2) + ' BARY');
+}
+
+function sellCrypto() {
+    if (cryptoCoins <= 0) { showToast('У вас нет монет'); playSound('error'); return; }
+    const sum = cryptoCoins * cryptoPrice;
+    money += Math.floor(sum); cryptoCoins = 0;
+    updateWallet(); closeModal(); playSound('success'); saveGame();
+    showToast('Вы продали монеты за ' + format(sum) + ' ₽');
+}
+
+setInterval(() => {
+    const change = (Math.random() * 0.3) - 0.15;
+    cryptoPrice = Math.max(50, Math.min(300, Math.floor(cryptoPrice * (1 + change))));
+    const priceEl = document.getElementById('cryptoPriceDisplay');
+    if (priceEl) priceEl.innerText = format(cryptoPrice) + ' ₽';
+    const lineEl = document.getElementById('cryptoLine');
+    if (lineEl) lineEl.style.height = ((cryptoPrice - 50) / 250 * 100) + '%';
+}, 3000);
+
+function openProperty() {
+    document.getElementById('modalIcon').innerText = '🏠';
+    document.getElementById('modalTitle').innerText = 'Недвижимость';
+    const prop = propertyMarket[currentLocation];
+    let html = '<div class="bank-card" style="text-align:left;">';
+    html += '<div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">';
+    html += '<img src="' + prop.img + '" style="width:60px; height:60px; border-radius:10px; object-fit:cover;" loading="lazy">';
+    html += '<div><h3>' + prop.name + '</h3><p style="font-size:12px;">Цена: <b>' + format(prop.price) + ' ₽</b></p></div>';
+    html += '</div>';
+    html += '<p style="font-size:12px;">Базовый доход: <b>+' + format(prop.income) + ' ₽ / 30 сек</b></p>';
+    html += '<button class="bank-btn" onclick="buyProperty()">Купить</button>';
+    html += '</div>';
+    html += '<h3 style="text-align:left; margin-top:15px;">Ваша недвижимость (' + properties.length + ')</h3>';
+    if (properties.length === 0) {
+        html += '<p style="font-size:12px; color:var(--text-sec); text-align:left;">У вас пока нет квартир.</p>';
+    } else {
+        properties.forEach((p, i) => {
+            const incomeText = p.isRenovated ? '+' + format(p.income) + ' ₽ / 30 сек (с ремонтом)' : '+' + format(p.income) + ' ₽ / 30 сек';
+            html += '<div class="bank-card" style="text-align:left;">';
+            html += '<div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;">';
+            html += '<img src="' + p.img + '" style="width:50px; height:50px; border-radius:8px; object-fit:cover;" loading="lazy">';
+            html += '<div><h3>' + p.name + ' ' + (p.isRenovated ? '🛠' : '') + '</h3><p style="font-size:12px;">Приносит: <b>' + incomeText + '</b></p></div>';
+            html += '</div>';
+            if (!p.isRenovated) {
+                let repairCost = 0;
+                if (p.name === 'Старинный замок') { repairCost = 3000000; }
+                else { repairCost = Math.floor(p.buyPrice * 0.5); }
+                html += '<button class="bank-btn" style="background:#f59e0b;" onclick="repairProperty(' + i + ')">Сделать ремонт (' + format(repairCost) + ' ₽)</button>';
+            }
+            html += '<button class="bank-btn" style="background:var(--danger); margin-top:8px;" onclick="sellProperty(' + i + ')">Продать за ' + format(Math.floor(p.buyPrice * 0.8)) + ' ₽</button>';
+            html += '</div>';
+        });
+    }
+    document.getElementById('modalText').innerHTML = html;
+    document.getElementById('modalExtra').innerHTML = '';
+    document.getElementById('modalCloseBtn').style.display = 'block';
+    document.getElementById('modal').classList.add('active');
+}
+
+function buyProperty() {
+    const prop = propertyMarket[currentLocation];
+    if (money < prop.price) { showToast('Мало денег'); playSound('error'); return; }
+    money -= prop.price;
+    properties.push({ name: prop.name, income: prop.income, baseIncome: prop.income, buyPrice: prop.price, isRenovated: false, img: prop.img });
+    updateWallet(); closeModal(); playSound('success'); saveGame();
+    showToast('Вы купили ' + prop.name + '!');
+}
+
+function repairProperty(index) {
+    const p = properties[index];
+    let repairCost = 0;
+    if (p.name === 'Старинный замок') { repairCost = 3000000; }
+    else { repairCost = Math.floor(p.buyPrice * 0.5); }
+    
+    if (money < repairCost) { showToast('Мало денег на ремонт'); playSound('error'); return; }
+    money -= repairCost;
+    p.isRenovated = true;
+    p.income = p.baseIncome * 2;
+    updateWallet(); closeModal(); playSound('success'); saveGame();
+    showToast('Ремонт завершен! Доход удвоен.');
+}
+
+function sellProperty(index) {
+    const p = properties[index];
+    const sellPrice = Math.floor(p.buyPrice * 0.8);
+    money += sellPrice;
+    properties.splice(index, 1);
+    updateWallet(); closeModal(); playSound('success'); saveGame();
+    showToast('Вы продали ' + p.name + ' за ' + format(sellPrice) + ' ₽');
+}
+
+function openBank() {
+    document.getElementById('modalIcon').innerText = '🏦';
+    document.getElementById('modalTitle').innerText = 'Банк';
+    let html = '<div class="bank-card"><h3>Кредит</h3>';
+    html += '<p style="font-size:12px;">Текущий долг: <b>' + format(debt) + ' ₽</b></p>';
+    html += '<p style="font-size:12px;">Максимальный лимит: <b>500 000 ₽</b></p>';
+    html += '<input type="number" id="loanInput" class="bank-input" placeholder="Сумма кредита" ' + (debt > 0 ? 'disabled' : '') + '>';
+    html += '<button class="bank-btn" onclick="takeLoan()" id="takeLoanBtn" ' + (debt > 0 ? 'disabled style="opacity:0.5"' : '') + '>Взять кредит</button>';
+    html += '<button class="bank-btn" style="background:var(--success);margin-top:8px;" onclick="payLoan()">Погасить долг</button>';
+    html += '</div>';
+    html += '<div class="bank-card"><h3>Вклад</h3><p style="font-size:12px;">Вклад: <b>' + format(deposit) + ' ₽</b></p><input type="number" id="depositInput" class="bank-input" placeholder="Сумма"><button class="bank-btn" onclick="makeDeposit()">Положить</button><button class="bank-btn" style="background:var(--success);margin-top:8px;" onclick="withdrawDeposit()">Снять</button></div>';
+    html += '<div class="bank-card"><h3>Крипто-биржа</h3><p style="font-size:12px;">Купите монеты BARY и продайте, когда курс вырастет.</p><button class="bank-btn" style="background:#8b5cf6;" onclick="openCrypto()">Перейти на биржу</button></div>';
+    document.getElementById('modalText').innerHTML = html;
+    document.getElementById('modalExtra').innerHTML = '';
+    document.getElementById('modalCloseBtn').style.display = 'block';
+    document.getElementById('modal').classList.add('active');
+}
+
+function takeLoan() {
+    if (debt > 0) { showToast('Сначала погасите старый долг!'); playSound('error'); return; }
+    const s = parseInt(document.getElementById('loanInput').value);
+    if (!s || s <= 0) { showToast('Введите сумму'); playSound('error'); return; }
+    if (s > 500000) { showToast('Максимум 500 000 ₽'); playSound('error'); return; }
+    money += s;
+    debt += Math.floor(s * 1.1);
+    updateWallet(); closeModal(); playSound('success'); saveGame();
+    showToast('Кредит: ' + format(s) + ' ₽');
+}
+
+function payLoan() {
+    if (debt <= 0) { showToast('Нет долга'); playSound('error'); return; }
+    if (money < debt) { showToast('Мало денег для погашения'); playSound('error'); return; }
+    money -= debt; debt = 0; updateWallet(); closeModal(); playSound('success'); saveGame();
+    showToast('Долг погашен!');
+}
+
+function makeDeposit() { const s = parseInt(document.getElementById('depositInput').value); if (!s || s <= 0 || s > money) { showToast('Мало денег'); playSound('error'); return; } money -= s; deposit += s; updateWallet(); closeModal(); playSound('success'); saveGame(); showToast('Вклад: ' + format(s) + ' ₽'); }
+function withdrawDeposit() { if (deposit <= 0) { showToast('Вклад пуст'); playSound('error'); return; } money += deposit; deposit = 0; updateWallet(); closeModal(); playSound('success'); saveGame(); showToast('Снято'); }
+
+function openLocations() {
+    document.getElementById('modalIcon').innerText = '🌍';
+    document.getElementById('modalTitle').innerText = 'Локации';
+    let html = '';
+    for (let loc in locations) {
+        const data = locations[loc];
+        const isCurrent = loc === currentLocation;
+        html += '<div class="bank-card" style="text-align:left;"><h3>' + loc + (isCurrent ? ' (Вы здесь)' : '') + '</h3><p style="font-size:12px;">Цены x' + data.multiplier + '</p>';
+        if (!isCurrent) html += '<button class="bank-btn" onclick="moveTo(\'' + loc + '\')">Переехать за ' + format(data.cost) + ' ₽</button>';
+        html += '</div>';
+    }
+    document.getElementById('modalText').innerHTML = html;
+    document.getElementById('modalExtra').innerHTML = '';
+    document.getElementById('modalCloseBtn').style.display = 'block';
+    document.getElementById('modal').classList.add('active');
+}
+function moveTo(loc) { const cost = locations[loc].cost; if (money < cost) { showToast('Мало денег'); playSound('error'); return; } money -= cost; currentLocation = loc; updateWallet(); updateLocationUI(); closeModal(); playSound('success'); saveGame(); showToast('Вы в ' + loc + '!'); }
+
+function openProfile() {
+    const profitText = stats.profit >= 0 ? '+' + format(stats.profit) : format(stats.profit);
+    document.getElementById('modalIcon').innerText = '👤';
+    document.getElementById('modalTitle').innerText = 'Профиль';
+    const xpPercent = Math.floor((xp / xpNeeded) * 100);
+    let html = '<div class="p-stats">';
+    html += '<div class="p-row"><span>Имя:</span><span>Ваня Полонский</span></div>';
+    html += '<div class="p-row"><span>💰 Баланс:</span><span>' + format(money) + ' ₽</span></div>';
+    html += '<div class="p-row"><span>📉 Долг:</span><span style="color:var(--danger)">' + format(debt) + ' ₽</span></div>';
+    html += '<div class="p-row"><span>🏦 Вклад:</span><span style="color:var(--success)">' + format(deposit) + ' ₽</span></div>';
+    html += '<div class="p-row"><span>🏠 Недвижимость:</span><span>' + properties.length + ' шт.</span></div>';
+    html += '<div class="p-row"><span>📈 Прибыль:</span><span style="color:' + (stats.profit >= 0 ? 'var(--success)' : 'var(--danger)') + '">' + profitText + ' ₽</span></div>';
+    html += '<div style="margin-top:15px;"><div class="p-row" style="margin-bottom:6px;"><span>Уровень ' + level + '</span><span>' + xp + '/' + xpNeeded + ' XP</span></div><div class="xp-bar-container"><div class="xp-bar-fill" style="width:' + xpPercent + '%"></div></div></div>';
+    html += '</div>';
+    html += '<button class="modal-btn" style="background:var(--success);" onclick="openBank()">🏦 Банк</button>';
+    html += '<button class="modal-btn" style="background:#8b5cf6;" onclick="openProperty()">🏠 Недвижимость</button>';
+    html += '<button class="modal-btn" onclick="openLocations()">🌍 Локация</button>';
+    document.getElementById('modalText').innerHTML = html;
+    document.getElementById('modalExtra').innerHTML = '';
+    document.getElementById('modalCloseBtn').style.display = 'block';
+    document.getElementById('modal').classList.add('active');
+}
+
+function updateLevelUI() { document.getElementById('levelBadge').innerText = 'Lv. ' + level; }
+
+function addXp(amount) {
+    xp += amount;
+    if (xp >= xpNeeded) {
+        xp -= xpNeeded; level++;
+        xpNeeded = Math.floor(xpNeeded * 1.5);
+        money += 5000;
+        updateWallet(); updateLevelUI();
+        showModal('🏆', 'Новый уровень!', 'Вы достигли ' + level + ' уровня! Награда: 5 000 ₽.');
+    }
+    saveGame();
+}
+
+function showToast(text) {
+    const t = document.getElementById('toast');
+    t.innerText = text;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    const index = tab === 'buy' ? 1 : tab === 'sell' ? 2 : tab === 'chat' ? 3 : tab === 'biz' ? 4 : tab === 'black' ? 5 : 6;
+    document.querySelector('.tab:nth-child(' + index + ')').classList.add('active');
+    renderTab();
+}
+
+function renderTab() {
+    const c = document.getElementById('mainContent');
+    c.innerHTML = '';
+    if (currentTab === 'buy') renderBuy(c);
+    else if (currentTab === 'sell') renderSell(c);
+    else if (currentTab === 'chat') renderChats(c);
+    else if (currentTab === 'biz') renderBiz(c);
+    else if (currentTab === 'black') renderBlackMarket(c);
+    else if (currentTab === 'news') renderNews(c);
+}
+
+function renderBuy(c) {
+    const mult = locations[currentLocation].multiplier;
+    marketItems.forEach((item, i) => {
+        const d = document.createElement('div'); d.className = 'ad-card';
+        const price = Math.floor(item.askPrice * mult);
+        d.innerHTML = '<div class="ad-img"><img src="' + item.img + '" alt="' + item.name + '" loading="lazy"></div><div class="ad-info"><div class="ad-title">' + item.name + '</div><div class="ad-price">' + format(price) + ' ₽</div><div class="ad-desc">' + item.desc + '</div><div class="ad-actions"><button class="act-btn btn-chat" onclick="startNegotiation(' + item.id + ')">💬 Торг</button><button class="act-btn btn-buy" onclick="buyItem(' + item.id + ')">Купить</button></div></div>';
+        c.appendChild(d);
+    });
+}
+function renderSell(c) {
+    if (!inventory.length) { c.innerHTML = '<div class="empty">Нет товаров.</div>'; return; }
+    inventory.forEach((item, i) => {
+        const d = document.createElement('div'); d.className = 'ad-card';
+        let title = item.name + (item.isStolen ? ' (краденый)' : '');
+        d.innerHTML = '<div class="ad-img"><img src="' + item.img + '" alt="' + title + '" loading="lazy"></div><div class="ad-info"><div class="ad-title">' + title + '</div><div class="ad-desc">Куплено за ' + format(item.buyPrice) + ' ₽</div><div class="ad-actions"><button class="act-btn btn-sell" onclick="openSellModal(' + i + ')">📤 Выставить</button></div></div>';
+        c.appendChild(d);
+    });
+}
+function renderChats(c) {
+    if (!chats.length) { c.innerHTML = '<div class="empty">Нет переписок.</div>'; return; }
+    const list = document.createElement('div'); list.className = 'chat-list';
+    [...chats].reverse().forEach((chat, i) => {
+        const realIndex = chats.length - 1 - i;
+        const last = chat.messages[chat.messages.length - 1];
+        const d = document.createElement('div'); d.className = 'chat-item';
+        d.innerHTML = '<div class="chat-ava">👤</div><div class="chat-info"><div class="chat-name">' + chat.buyerName + '</div><div class="chat-last">' + last.text + '</div></div>';
+        d.onclick = () => openChat(realIndex); list.appendChild(d);
+    });
+    c.appendChild(list);
+}
+function renderBiz(c) {
+    partners.forEach((p, i) => {
+        const cost = p.level === 0 ? p.baseCost : Math.floor(p.baseCost * Math.pow(1.5, p.level));
+        const totalIncome = p.income * p.level;
+        const isMax = p.level >= 5;
+        const card = document.createElement('div'); card.className = 'biz-card';
+        card.innerHTML = '<div class="biz-info"><div class="biz-title">' + p.name + ' (Ур. ' + p.level + ')</div><div class="biz-desc">' + p.desc + '</div>' + (p.level > 0 ? '<div class="biz-income">+' + format(totalIncome) + ' ₽ / 30 сек</div>' : '') + '</div>' + (isMax ? '<div style="color:var(--success);font-weight:800;font-size:12px;">MAX</div>' : '<button class="biz-btn" onclick="buyPartner(' + i + ',' + cost + ')">' + (p.level === 0 ? 'Нанять' : 'Апгрейд') + '<br><span style="font-size:10px;">' + format(cost) + ' ₽</span></button>');
+        c.appendChild(card);
+    });
+}
+function renderBlackMarket(c) {
+    const mult = locations[currentLocation].multiplier;
+    const blackItems = marketItems.filter(i => i.askPrice > 50000);
+    blackItems.forEach((item, i) => {
+        const price = Math.floor(item.askPrice * 0.2 * mult);
+        const d = document.createElement('div'); d.className = 'ad-card';
+        d.innerHTML = '<div class="ad-img"><img src="' + item.img + '" alt="' + item.name + '" loading="lazy"></div><div class="ad-info"><div class="ad-title">' + item.name + '</div><div class="ad-price" style="color:var(--danger)">' + format(price) + ' ₽</div><div class="ad-desc">Риск 40%</div><div class="ad-actions"><button class="act-btn btn-black" onclick="buyBlackItem(' + item.id + ')">Купить</button></div></div>';
+        c.appendChild(d);
+    });
+}
+
+// ОДНА ТАБЛИЦА НОВОСТЕЙ
+function renderNews(c) {
+    let html = `
+    <div class="news-card">
+        <div class="news-title">📢 История обновлений</div>
+        <div class="news-item"><b>1.8 (Баг-фикс):</b> Курс крипты теперь колеблется от 50 до 300 ₽. Диалоги в чатах начинаются вежливо.</div>
+        <div class="news-item"><b>1.7 (Кредиты):</b> Максимум 500 000 ₽. Новый кредит нельзя взять, пока не погашен старый.</div>
+        <div class="news-item"><b>1.6 (Сохранение):</b> Прогресс сохраняется автоматически.</div>
+        <div class="news-item"><b>1.5 (Картинки):</b> Все товары и недвижимость теперь с реальными фотографиями.</div>
+        <div class="news-item"><b>1.4 (Германия):</b> Добавлена Германия, замок за 5 000 000 ₽ и ремонт за 3 000 000 ₽.</div>
+        <div class="news-item"><b>1.3 (Звуки):</b> Добавлены приятные звуковые эффекты для кнопок.</div>
+    </div>`;
+    c.innerHTML = html;
+}
+
+function buyItem(id) {
+    const mult = locations[currentLocation].multiplier; const item = marketItems.find(i => i.id === id);
+    const price = Math.floor(item.askPrice * mult);
+    if (money < price) { showModal('❌', 'Нет денег', 'Нужно ' + format(price) + ' ₽.'); playSound('error'); return; }
+    const sellerName = names[Math.floor(Math.random() * names.length)];
+    const chat = { id: Date.now(), buyerName: sellerName + ' (прод.)', itemId: item.id, itemName: item.name, price: price, truePrice: item.truePrice, messages: [{ from: 'seller', text: 'Цена ' + format(price) + ' ₽. Берете?', time: getTime() }], status: 'buy_deal' };
+    chats.push(chat); saveGame(); switchTab('chat'); openChat(chats.length - 1);
+}
+
+// ФИКС ДИАЛОГОВ ПРИ ПОКУПКЕ (ТОРГ)
+function startNegotiation(id) {
+    const mult = locations[currentLocation].multiplier; const item = marketItems.find(i => i.id === id);
+    const sellerName = names[Math.floor(Math.random() * names.length)];
+    const chat = { 
+        id: Date.now(), 
+        buyerName: sellerName + ' (прод.)', 
+        itemId: item.id, 
+        itemName: item.name, 
+        price: Math.floor(item.askPrice * mult), 
+        truePrice: Math.floor(item.truePrice * mult), 
+        messages: [
+            { from: 'seller', text: 'Здравствуйте! Да, ' + item.name + ' в наличии. Торг возможен?', time: getTime() }
+        ], 
+        status: 'negotiation' 
+    };
+    chats.push(chat); saveGame(); switchTab('chat'); openChat(chats.length - 1);
+}
+function buyBlackItem(id) {
+    const mult = locations[currentLocation].multiplier; const item = marketItems.find(i => i.id === id);
+    const price = Math.floor(item.askPrice * 0.2 * mult);
+    if (money < price) { showModal('❌', 'Нет денег', 'Нужно ' + format(price) + ' ₽.'); playSound('error'); return; }
+    money -= price; inventory.push(Object.assign({}, item, { buyPrice: price, isStolen: true })); updateWallet();
+    playSound('success'); saveGame();
+    showModal('🕵️', 'Куплено', 'Вы купили ' + item.name + ' на чёрном рынке.'); switchTab('sell');
+}
+function buyPartner(index, cost) {
+    if (money < cost) { showModal('❌', 'Нет денег', 'Нужно ' + format(cost) + ' ₽.'); playSound('error'); return; }
+    money -= cost; partners[index].level++; updateWallet(); renderTab(); playSound('success'); saveGame();
+}
+
+function openSellModal(index) {
+    const item = inventory[index];
+    let maxLimit = 0;
+    if (item.truePrice < 50000) { maxLimit = Math.floor(item.truePrice * 2.5); }
+    else { maxLimit = Math.floor(item.truePrice * 1.8); }
+    
+    document.getElementById('modalIcon').innerText = '📤'; 
+    document.getElementById('modalTitle').innerText = 'Выставить'; 
+    document.getElementById('modalText').innerHTML = 'Цена для ' + item.name + '<br><span style="font-size:11px;color:var(--danger);">Максимум: ' + format(maxLimit) + ' ₽</span>';
+    document.getElementById('modalExtra').innerHTML = '<input type="number" id="sellPrice" class="modal-input" placeholder="Цена (₽)" value="' + item.truePrice + '"><input type="text" id="sellDesc" class="modal-input" placeholder="Характеристики"><button class="modal-btn" style="background:var(--success);margin-bottom:5px;" onclick="submitSale(' + index + ', ' + maxLimit + ')">Выставить</button>';
+    
+    document.getElementById('modalCloseBtn').style.display = 'none';
+    document.getElementById('modal').classList.add('active');
+}
+
+// ФИКС ДИАЛОГОВ ПРИ ПРОДАЖЕ (ВЫСТАВЛЕНИЕ)
+function submitSale(index, maxLimit) {
+    const mult = locations[currentLocation].multiplier; const item = inventory[index];
+    const price = parseInt(document.getElementById('sellPrice').value) || item.truePrice;
+    if (price > maxLimit) { showToast('Слишком много! Максимум ' + format(maxLimit) + ' ₽'); playSound('error'); return; }
+    const desc = document.getElementById('sellDesc').value || 'Без описания';
+    inventory.splice(index, 1);
+    const buyerName = names[Math.floor(Math.random() * names.length)];
+    const isScam = Math.random() < 0.35;
+    
+    const chat = { 
+        id: Date.now(), 
+        buyerName: buyerName, 
+        itemId: item.id, 
+        itemName: item.name, 
+        userPrice: price, 
+        userDesc: desc, 
+        truePrice: Math.floor(item.truePrice * mult), 
+        buyPrice: item.buyPrice, 
+        isScam: isScam, 
+        isStolen: item.isStolen, 
+        messages: [
+            { from: 'seller', text: 'Здравствуйте! Еще продаете "' + item.name + '"?', time: getTime() },
+            { from: 'me', text: 'Привет! Да, актуально. Цена ' + format(price) + ' ₽, торг есть.', time: getTime() }
+        ], 
+        status: 'waiting' 
+    };
+    chats.push(chat); saveGame();
+    showModal('⏳', 'Поиск', 'Ожидайте...');
+    setTimeout(function () {
+        if (chat.status === 'waiting') {
+            chat.status = 'active';
+            if (isScam) { chat.messages.push({ from: 'seller', text: 'Готов купить за ' + format(price + 1000) + ' ₽! Но я в другом городе. Оплатите 1000 ₽ за страховку.', time: getTime() }); }
+            else { const offer = Math.floor(price * (0.65 + Math.random() * 0.2)); chat.messages.push({ from: 'seller', text: 'А за ' + format(offer) + ' ₽ отдадите?', time: getTime() }); chat.botOffer = offer; }
+            saveGame();
+            if (currentTab === 'chat') { openChat(chats.indexOf(chat)); }
+        }
+    }, 17000);
+}
+function openChat(index) {
+    const chat = chats[index]; const c = document.getElementById('mainContent'); c.innerHTML = '';
+    const d = document.createElement('div'); d.className = 'chat-box';
+    d.innerHTML = '<div class="chat-head" onclick="switchTab(\'chat\')" style="cursor:pointer">← 👤 ' + chat.buyerName + '</div><div class="chat-msgs" id="chatBox-' + index + '">' + chat.messages.map(m => '<div class="msg ' + m.from + '">' + m.text + '<span class="msg-time">' + m.time + '</span></div>').join('') + '</div><div class="chat-input"><input id="chatInput-' + index + '" placeholder="Написать..." onkeypress="if(event.key===\'Enter\')sendMessageToChat(' + index + ')"><button onclick="sendMessageToChat(' + index + ')">➤</button></div>';
+    c.appendChild(d);
+    setTimeout(() => { const b = document.getElementById('chatBox-' + index); if (b) b.scrollTop = b.scrollHeight; }, 50);
+}
+
+function sendMessageToChat(index) {
+    const input = document.getElementById('chatInput-' + index); const text = input.value.trim(); if (!text) return;
+    const chat = chats[index]; chat.messages.push({ from: 'me', text: text, time: getTime() }); input.value = '';
+    const box = document.getElementById('chatBox-' + index); const md = document.createElement('div'); md.className = 'msg me';
+    md.innerHTML = text + '<span class="msg-time">' + getTime() + '</span>'; box.appendChild(md); box.scrollTop = box.scrollHeight;
+    
+    setTimeout(function () {
+        let reply = '', action = null; const lower = text.toLowerCase(); const nums = text.match(/\d+/g); const myOffer = nums ? parseInt(nums.join('')) : null;
+
+        if (chat.isScam && chat.status === 'active') {
+            if (lower.includes('нет') || lower.includes('при встрече') || lower.includes('без предоплат')) {
+                reply = 'Ладно, извини.'; chat.status = 'done'; chat.buyerName = '⚠️ Мошенник';
+                showToast('Мошенник заблокирован. Ищем нового...');
+                setTimeout(() => {
+                    const newBuyer = names[Math.floor(Math.random() * names.length)];
+                    const honest = { id: Date.now(), buyerName: newBuyer, itemId: chat.itemId, itemName: chat.itemName, userPrice: chat.userPrice, truePrice: chat.truePrice, buyPrice: chat.buyPrice, isScam: false, isStolen: chat.isStolen, messages: [{ from: 'seller', text: 'Здравствуйте, еще продаете?', time: getTime() }], status: 'active' };
+                    const offer = Math.floor(honest.userPrice * 0.8); honest.botOffer = offer;
+                    honest.messages.push({ from: 'seller', text: 'Готов купить за ' + format(offer) + ' ₽.', time: getTime() });
+                    chats.push(honest); saveGame();
+                    if (currentTab === 'chat') openChat(chats.indexOf(honest));
+                }, 5000);
+            } else if (lower.includes('да') || lower.includes('ок') || lower.includes('переведу')) {
+                const stolen = Math.min(money, 1000); money -= stolen; reply = 'Спасибо за перевод! 😂'; chat.status = 'done'; chat.buyerName = '⚠️ Мошенник (кинул)';
+                action = function () { updateWallet(); saveGame(); showModal('🚨', 'Вас обманули!', 'Мошенник украл ' + format(stolen) + ' ₽.'); };
+            } else reply = 'Ну так что? Переведете за страховку?';
+        }
+        else if (chat.status === 'negotiation') {
+            const item = marketItems.find(i => i.id === chat.itemId);
+            if (myOffer) {
+                if (myOffer < item.askPrice * 0.6) reply = 'Не интересно.';
+                else if (myOffer < item.askPrice * 0.85) reply = 'Маловато. Могу отдать за ' + format(Math.floor(item.askPrice * 0.85)) + ' ₽.';
+                else if (money < myOffer) reply = 'У тебя недостаточно средств.';
+                else { reply = 'Договорились за ' + format(myOffer) + ' ₽!'; money -= myOffer; inventory.push(Object.assign({}, item, { buyPrice: myOffer })); stats.bought++; chat.status = 'done'; action = function () { updateWallet(); addXp(15); saveGame(); }; }
+            } else if (lower.includes('скидк') || lower.includes('дешевл')) reply = 'Могу скинуть до ' + format(Math.floor(item.askPrice * 0.9)) + ' ₽.';
+            else reply = 'Какую цену предлагаете?';
+        }
+        else if (chat.status === 'buy_deal') {
+            if (lower.includes('да') || lower.includes('ок') || lower.includes('беру')) {
+                if (money < chat.price) reply = 'У тебя недостаточно средств.';
+                else { reply = 'Спишем ' + format(chat.price) + ' ₽.'; money -= chat.price; const item = marketItems.find(i => i.id === chat.itemId); inventory.push(Object.assign({}, item, { buyPrice: chat.price })); stats.bought++; chat.status = 'done'; action = function () { updateWallet(); addXp(15); saveGame(); }; }
+            } else reply = 'Берете?';
+        }
+        else if (chat.status === 'active') {
+            let currentBotPrice = chat.botOffer || chat.userPrice;
+            for (let i = chat.messages.length - 1; i >= 0; i--) { if (chat.messages[i].from === 'seller') { const m = chat.messages[i].text.match(/\d+/g); if (m) { currentBotPrice = parseInt(m.join('')); break; } } }
+            
+            if (myOffer) {
+                if (myOffer > currentBotPrice) reply = 'Дорого. Готов только ' + format(currentBotPrice) + ' ₽.';
+                else if (myOffer < chat.buyPrice) reply = 'Это меньше, чем я купил.';
+                else {
+                    if (chat.isStolen && Math.random() < 0.4) { reply = 'Я в полицию звоню! 🚓'; chat.status = 'done'; action = function () { money -= chat.buyPrice * 2; updateWallet(); saveGame(); showModal('🚓', 'Полиция!', 'Штраф ' + format(chat.buyPrice * 2) + ' ₽.'); }; }
+                    else { reply = 'Отлично, по рукам! За ' + format(myOffer) + ' ₽ беру.'; money += myOffer; stats.sold++; stats.profit += (myOffer - chat.buyPrice); stats.deals++; chat.status = 'done'; action = function () { updateWallet(); addXp(25); saveGame(); }; }
+                }
+            } 
+            else if (lower.includes('да') || lower.includes('ок')) {
+                if (chat.isStolen && Math.random() < 0.4) { reply = 'Полиция! 🚓'; chat.status = 'done'; action = function () { money -= chat.buyPrice * 2; updateWallet(); saveGame(); showModal('🚓', 'Полиция!', 'Штраф ' + format(chat.buyPrice * 2) + ' ₽.'); }; }
+                else { reply = 'Тогда я перевожу ' + format(currentBotPrice) + ' ₽.'; money += currentBotPrice; stats.sold++; stats.profit += (currentBotPrice - chat.buyPrice); stats.deals++; chat.status = 'done'; action = function () { updateWallet(); addXp(25); saveGame(); }; }
+            } 
+            else reply = 'Какая цена?';
+        }
+        else if (chat.status === 'done') reply = 'Спасибо за сделку! 🤝';
+        if (!reply) reply = 'Я слушаю.';
+        chat.messages.push({ from: 'seller', text: reply, time: getTime() }); saveGame();
+        const rd = document.createElement('div'); rd.className = 'msg seller'; rd.innerHTML = reply + '<span class="msg-time">' + getTime() + '</span>';
+        box.appendChild(rd); box.scrollTop = box.scrollHeight;
+        if (action) action();
+        if (navigator.vibrate) navigator.vibrate(30);
+    }, 1200);
+}
+function showModal(icon, title, text) { document.getElementById('modalIcon').innerText = icon; document.getElementById('modalTitle').innerText = title; document.getElementById('modalText').innerText = text; document.getElementById('modalExtra').innerHTML = ''; document.getElementById('modalCloseBtn').style.display = 'block'; document.getElementById('modal').classList.add('active'); }
+function closeModal() { document.getElementById('modal').classList.remove('active'); renderTab(); }
+
+setInterval(() => {
+    let income = 0;
+    partners.forEach(p => { income += p.income * p.level; });
+    properties.forEach(p => { income += p.income; });
+    
+    if (income > 0) { money += income; updateWallet(); showToast('+ ' + format(income) + ' ₽ (бизнес и аренда)'); saveGame(); }
+    if (deposit > 0) { const interest = Math.floor(deposit * 0.02); deposit += interest; showToast('+' + format(interest) + ' ₽ по вкладу'); saveGame(); }
+    if (debt > 0) { debt += Math.floor(debt * 0.05); showToast('⚠️ Долг вырос на 5%!'); saveGame(); }
+}, 30000);
+
+function claimBonus() { 
+    const now = Date.now(); 
+    try {
+        const last = localStorage.getItem('lastBonusClaim'); 
+        if (last && (now - last < 86400000)) { showModal('⏳', 'Уже получено', 'Приходите позже.'); } 
+        else { money += 5000; localStorage.setItem('lastBonusClaim', now); updateWallet(); showModal('🎁', 'Ежедневный бонус!', 'Вы получили 5 000 ₽.'); saveGame(); }
+    } catch(e) {
+        money += 5000; updateWallet(); showModal('🎁', 'Ежедневный бонус!', 'Вы получили 5 000 ₽.'); saveGame();
+    }
+}
+
+try { loadGame(); } catch(e) { console.log('Ошибка при загрузке:', e); } finally {
+    setTimeout(() => { document.getElementById('loader').style.opacity = '0'; setTimeout(() => document.getElementById('loader').style.display = 'none', 500); renderTab(); }, 1000);
+}
+</script>
+</body>
+</html>
